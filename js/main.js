@@ -220,7 +220,8 @@ const parameters = {
   'time scale': 100.0,
   'target': 0,
   'rendering': 1,
-  reset: _ => reset()
+  reset: _ => reset(),
+  'full screen': () => canvas.requestFullscreen(),
 };
 
 // from https://github.com/mitaka1962/gray-scott-model/blob/master/main.js
@@ -254,6 +255,7 @@ gui.add(parameters, 'time scale', 0.0, 300.0);
 gui.add(parameters, 'target', {'u': 0, 'v': 1, 'abs(u-v)': 2});
 gui.add(parameters, 'rendering', {'2d': 0, '3d': 1});
 gui.add(parameters, 'reset').name("reset (space)");
+gui.add(parameters, 'full screen');
 
 let reqinit = false;
 let pause = false;
