@@ -1,4 +1,5 @@
-(function() {
+import { GUI } from "https://cdn.jsdelivr.net/npm/lil-gui@0.16.1/dist/lil-gui.esm.min.js";
+import Stats from "https://mrdoob.github.io/stats.js/build/stats.module.js";
 
   function createShader(gl, source, type) {
     const shader = gl.createShader(type);
@@ -211,6 +212,7 @@ void main(void) {
   const parameters = {
     'diffusion U': 0.0009,
     'diffusion V': 0.004,
+    'presets': 'default',
     'feed': 0.09,
     'kill': 0.06,
     'space step': 0.05,
@@ -221,19 +223,65 @@ void main(void) {
     reset: _ => reset()
   };
 
+  // from https://github.com/mitaka1962/gray-scott-model/blob/master/main.js
+  const presets = {
+      default: { feed: 0.09, kill: 0.06 },
+      stripe: { feed: 0.022, kill: 0.051 },
+      spots: { feed: 0.035, kill: 0.065 },
+      "wandering bubbles": { feed: 0.012, kill: 0.050 },
+      waves: { feed: 0.025, kill: 0.050 },
+      amorphous: { feed: 0.040, kill: 0.060 },
+      bumps: { feed: 0.028, kill: 0.054 },
+      "waving spots": { feed: 0.025, kill: 0.060 },
+      "snapping strings": { feed: 0.030, kill: 0.060 },
+      balloons: { feed: 0.011, kill: 0.046 },
+  };
+  
   const stats = new Stats();
   document.body.appendChild(stats.dom);
-  const gui = new dat.GUI();
+  const gui = new GUI();
   gui.add(parameters, 'diffusion U', 0.00001, 0.01).step(0.00001);
   gui.add(parameters, 'diffusion V', 0.00001, 0.01).step(0.00001);
-  gui.add(parameters, 'feed', 0.0, 0.1).step(0.0001);
-  gui.add(parameters, 'kill', 0.0, 0.1).step(0.0001);
+  gui.add(parameters, 'presets', Object.keys(presets)).onFinishChange((e) => {
+    parameters.feed = presets[e].feed;
+    parameters.kill = presets[e].kill;
+  });
+  gui.add(parameters, 'feed', 0.0, 0.1).step(0.0001).listen();
+  gui.add(parameters, 'kill', 0.0, 0.1).step(0.0001).listen();
   gui.add(parameters, 'space step', 0.01, 0.1).step(0.001);
   gui.add(parameters, 'time step', 0.001, 0.1).step(0.001);
   gui.add(parameters, 'time scale', 0.0, 300.0);
   gui.add(parameters, 'target', {'u': 0, 'v': 1, 'abs(u-v)': 2});
   gui.add(parameters, 'rendering', {'2d': 0, '3d': 1});
   gui.add(parameters, 'reset');
+
+  document.body.onkeydown = e => {
+    if (e.key == "h") {
+      if (gui._hidden) {
+        gui.show();
+      } else {
+        gui.hide();
+      }
+      stats.dom.style.display = stats.dom.style.display != "none" ? "none": "block";
+    } else if (e.key == " ") {
+      reset();
+    }
+  };
+  let mousedown = false;
+  document.body.onmousedown = e => {
+    mousedown = true;
+  };
+  document.body.onmousemove = e => {
+    if (!mousedown) return;
+    const x = e.clientX / innerWidth;
+    const y = e.clientY / innerHeight;
+    console.log(e, x, y);
+    parameters.feed = x * 0.1;
+    parameters.kill = y * 0.1;
+  };
+  document.body.onmouseup = e => {
+    mousedown = false;
+  };
 
   const canvas = document.getElementById('canvas');
   const gl = canvas.getContext('webgl2');
@@ -338,4 +386,3 @@ void main(void) {
   };
   reset();
 
-}());
