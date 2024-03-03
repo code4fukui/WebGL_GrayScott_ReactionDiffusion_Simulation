@@ -279,6 +279,7 @@ const setFeedKill = (x, y) => {
 };
 let mousedown = false;
 document.body.onmousedown = e => {
+  if (e.target != canvas) return;
   mousedown = true;
 };
 document.body.onmousemove = e => {
@@ -292,6 +293,7 @@ document.body.onmouseup = e => {
 };
 document.body.addEventListener('touchmove', e => {
   //e.preventDefault();
+  if (e.target != canvas) return;
   const touch = e.targetTouches[0];
   const x = touch.pageX / innerWidth;
   const y = touch.pageY / innerHeight;
