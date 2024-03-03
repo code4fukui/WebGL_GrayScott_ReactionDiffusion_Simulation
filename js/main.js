@@ -253,9 +253,10 @@ gui.add(parameters, 'time step', 0.001, 0.1).step(0.001);
 gui.add(parameters, 'time scale', 0.0, 300.0);
 gui.add(parameters, 'target', {'u': 0, 'v': 1, 'abs(u-v)': 2});
 gui.add(parameters, 'rendering', {'2d': 0, '3d': 1});
-gui.add(parameters, 'reset');
+gui.add(parameters, 'reset').name("reset (space)");
 
 let reqinit = false;
+let pause = false;
 document.body.onkeydown = e => {
   if (e.key == "h") {
     if (gui._hidden) {
@@ -264,10 +265,17 @@ document.body.onkeydown = e => {
       gui.hide();
     }
     stats.dom.style.display = stats.dom.style.display != "none" ? "none": "block";
+  } else if (e.key == "p") {
+    pause = !pause;
   } else if (e.key == " ") {
-    //reset();
-    reqinit = true;
+    reset();
+    //reqinit = true;
   }
+};
+const clamp01 = n => n < 0 ? 0 : n > 1 ? 1 : n;
+const setFeedKill = (x, y) => {
+  parameters.feed = clamp01((x - 0.05) * 1.1) * 0.1;
+  parameters.kill = clamp01((y - 0.05) * 1.1) * 0.1;
 };
 let mousedown = false;
 document.body.onmousedown = e => {
@@ -277,8 +285,7 @@ document.body.onmousemove = e => {
   if (!mousedown) return;
   const x = e.clientX / innerWidth;
   const y = e.clientY / innerHeight;
-  parameters.feed = x * 0.1;
-  parameters.kill = y * 0.1;
+  setFeedKill(x, y);
 };
 document.body.onmouseup = e => {
   mousedown = false;
@@ -287,9 +294,8 @@ document.body.addEventListener('touchmove', e => {
   //e.preventDefault();
   const touch = e.targetTouches[0];
   const x = touch.pageX / innerWidth;
-  const y = touch.pageX / innerHeight;
-  parameters.feed = x * 0.1;
-  parameters.kill = y * 0.1;
+  const y = touch.pageY / innerHeight;
+  setFeedKill(x, y);
 }, { passive: true });
 
 const canvas = document.getElementById('canvas');
@@ -383,14 +389,16 @@ const reset = function() {
       initialize();
     }
 
-    const currentRealSeconds = performance.now() * 0.001;
-    const nextSimulationSeconds = simulationSeconds + parameters['time scale'] * Math.min(0.2, currentRealSeconds - previousRealSeconds);
-    previousRealSeconds = currentRealSeconds;
+    if (!pause) {
+      const currentRealSeconds = performance.now() * 0.001;
+      const nextSimulationSeconds = simulationSeconds + parameters['time scale'] * Math.min(0.2, currentRealSeconds - previousRealSeconds);
+      previousRealSeconds = currentRealSeconds;
 
-    const timeStep = parameters['time step'];
-    while(nextSimulationSeconds - simulationSeconds > timeStep) {
-      update(timeStep);
-      simulationSeconds += timeStep;
+      const timeStep = parameters['time step'];
+      while (nextSimulationSeconds - simulationSeconds > timeStep) {
+        update(timeStep);
+        simulationSeconds += timeStep;
+      }
     }
     render();
 
