@@ -66,8 +66,8 @@ function createFramebuffer(gl, sizeX, sizeY) {
 const VERTICES_POSITION = new Float32Array([
   -1.0, -1.0,
   1.0, -1.0,
-  -1.0,  1.0,
-  1.0,  1.0
+  -1.0, 1.0,
+  1.0, 1.0
 ]);
 
 const VERTICES_INDEX = new Int16Array([
@@ -82,7 +82,7 @@ const FILL_SCREEN_VERTEX_SHADER_SOURCE =
 layout (location = 0) in vec2 position;
 
 void main(void) {
-gl_Position = vec4(position, 0.0, 1.0);
+  gl_Position = vec4(position, 0.0, 1.0);
 }
 `;
 
@@ -97,19 +97,19 @@ uniform vec2 u_resolution;
 uniform vec2 u_randomSeed;
 
 float random(vec2 x){
-return fract(sin(dot(x,vec2(12.9898, 78.233))) * 43758.5453);
+  return fract(sin(dot(x,vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 void main(void) {
-vec2 st = (2.0 * gl_FragCoord.xy - u_resolution) / min(u_resolution.x, u_resolution.y);
-if (length(st) < 0.1) {
-  o_state = vec2(
-    random(gl_FragCoord.xy * 0.15 + u_randomSeed + vec2(231.32, 171.92)),
-    random(gl_FragCoord.xy * 0.21 + u_randomSeed + vec2(131.17, 319.23))
-  );
-} else {
-  o_state = vec2(0.0);
-}
+  vec2 st = (2.0 * gl_FragCoord.xy - u_resolution) / min(u_resolution.x, u_resolution.y);
+  if (length(st) < 0.1) {
+    o_state = vec2(
+      random(gl_FragCoord.xy * 0.15 + u_randomSeed + vec2(231.32, 171.92)),
+      random(gl_FragCoord.xy * 0.21 + u_randomSeed + vec2(131.17, 319.23))
+    );
+  } else {
+    o_state = vec2(0.0);
+  }
 }
 `;
 
@@ -128,22 +128,22 @@ uniform float u_feed;
 uniform float u_kill;
 
 void main(void) {
-ivec2 coord = ivec2(gl_FragCoord.xy);
-ivec2 stateTextureSize = textureSize(u_stateTexture, 0);
+  ivec2 coord = ivec2(gl_FragCoord.xy);
+  ivec2 stateTextureSize = textureSize(u_stateTexture, 0);
 
-vec2 state = texelFetch(u_stateTexture, coord, 0).xy;
+  vec2 state = texelFetch(u_stateTexture, coord, 0).xy;
 
-vec2 left = texelFetch(u_stateTexture, ivec2(coord.x != 0 ? coord.x - 1 : stateTextureSize.x - 1, coord.y), 0).xy;
-vec2 right = texelFetch(u_stateTexture, ivec2(coord.x != stateTextureSize.x - 1 ? coord.x + 1 : 0, coord.y), 0).xy;
-vec2 down = texelFetch(u_stateTexture, ivec2(coord.x, coord.y != 0 ? coord.y - 1 : stateTextureSize.y - 1), 0).xy;
-vec2 up = texelFetch(u_stateTexture, ivec2(coord.x, coord.y != stateTextureSize.y - 1 ? coord.y + 1 : 0), 0).xy;
+  vec2 left = texelFetch(u_stateTexture, ivec2(coord.x != 0 ? coord.x - 1 : stateTextureSize.x - 1, coord.y), 0).xy;
+  vec2 right = texelFetch(u_stateTexture, ivec2(coord.x != stateTextureSize.x - 1 ? coord.x + 1 : 0, coord.y), 0).xy;
+  vec2 down = texelFetch(u_stateTexture, ivec2(coord.x, coord.y != 0 ? coord.y - 1 : stateTextureSize.y - 1), 0).xy;
+  vec2 up = texelFetch(u_stateTexture, ivec2(coord.x, coord.y != stateTextureSize.y - 1 ? coord.y + 1 : 0), 0).xy;
 
-vec2 laplacian = (left + right + up + down - 4.0 * state) / (u_spaceStep * u_spaceStep);
+  vec2 laplacian = (left + right + up + down - 4.0 * state) / (u_spaceStep * u_spaceStep);
 
-o_state = state + u_timeStep * (u_diffusion * laplacian + vec2(
-  state.x * state.x * state.y - (u_feed + u_kill) * state.x,
-  -state.x * state.x * state.y + u_feed * (1.0 - state.y)
-));
+  o_state = state + u_timeStep * (u_diffusion * laplacian + vec2(
+    state.x * state.x * state.y - (u_feed + u_kill) * state.x,
+    -state.x * state.x * state.y + u_feed * (1.0 - state.y)
+  ));
 }
 `
 
@@ -160,52 +160,52 @@ uniform int u_rendering;
 uniform float u_spaceStep;
 
 float getValue(ivec2 coord) {
-vec2 state = texelFetch(u_stateTexture, ivec2(coord), 0).xy;
+  vec2 state = texelFetch(u_stateTexture, ivec2(coord), 0).xy;
 
-if (u_target == 0) {
-  return state.x;
-} else if (u_target == 1) {
-  return state.y;
-} else {
-  return abs(state.x - state.y);
-}
+  if (u_target == 0) {
+    return state.x;
+  } else if (u_target == 1) {
+    return state.y;
+  } else {
+    return abs(state.x - state.y);
+  }
 }
 
 vec3 render2d(ivec2 coord) {
-return vec3(getValue(coord));
+  return vec3(getValue(coord));
 }
 
 vec3 lambert(vec3 color, vec3 normal, vec3 lightDir) {
-return color * max(dot(normal, lightDir), 0.0);
+  return color * max(dot(normal, lightDir), 0.0);
 }
 
 vec3 render3d(ivec2 coord) {
-ivec2 stateTextureSize = textureSize(u_stateTexture, 0);
-float state = getValue(coord);
-float left = getValue(ivec2(coord.x != 0 ? coord.x - 1 : stateTextureSize.x - 1, coord.y));
-float right = getValue(ivec2(coord.x != stateTextureSize.x - 1 ? coord.x + 1 : 0, coord.y));
-float down = getValue(ivec2(coord.x, coord.y != 0 ? coord.y - 1 : stateTextureSize.y - 1));
-float up = getValue(ivec2(coord.x, coord.y != stateTextureSize.y - 1 ? coord.y + 1 : 0));
+  ivec2 stateTextureSize = textureSize(u_stateTexture, 0);
+  float state = getValue(coord);
+  float left = getValue(ivec2(coord.x != 0 ? coord.x - 1 : stateTextureSize.x - 1, coord.y));
+  float right = getValue(ivec2(coord.x != stateTextureSize.x - 1 ? coord.x + 1 : 0, coord.y));
+  float down = getValue(ivec2(coord.x, coord.y != 0 ? coord.y - 1 : stateTextureSize.y - 1));
+  float up = getValue(ivec2(coord.x, coord.y != stateTextureSize.y - 1 ? coord.y + 1 : 0));
 
-vec3 dx = vec3(2.0 * u_spaceStep, 0.0, (right - left) / (2.0 * u_spaceStep));
-vec3 dy = vec3(0.0, 2.0 * u_spaceStep, (up - down) / (2.0 * u_spaceStep));
+  vec3 dx = vec3(2.0 * u_spaceStep, 0.0, (right - left) / (2.0 * u_spaceStep));
+  vec3 dy = vec3(0.0, 2.0 * u_spaceStep, (up - down) / (2.0 * u_spaceStep));
 
-vec3 normal = mix(normalize(cross(dx, dy)), vec3(0.0, 0.0, 1.0), 0.5);
+  vec3 normal = mix(normalize(cross(dx, dy)), vec3(0.0, 0.0, 1.0), 0.5);
 
-vec3 color = vec3(0.0);
-color += lambert(vec3(0.8), normal, vec3(1.0, 1.0, 1.0));
-color += lambert(vec3(0.3), normal, vec3(-1.0, -1.0, 0.3));
-return color;
+  vec3 color = vec3(0.0);
+  color += lambert(vec3(0.8), normal, vec3(1.0, 1.0, 1.0));
+  color += lambert(vec3(0.3), normal, vec3(-1.0, -1.0, 0.3));
+  return color;
 }
 
 void main(void) {
-vec2 state = texelFetch(u_stateTexture, ivec2(gl_FragCoord.xy), 0).xy;
+  vec2 state = texelFetch(u_stateTexture, ivec2(gl_FragCoord.xy), 0).xy;
 
-if (u_rendering == 0) {
-  o_color = vec4(render2d(ivec2(gl_FragCoord.xy)), 1.0);
-} else {
-  o_color = vec4(render3d(ivec2(gl_FragCoord.xy)), 1.0);
-}
+  if (u_rendering == 0) {
+    o_color = vec4(render2d(ivec2(gl_FragCoord.xy)), 1.0);
+  } else {
+    o_color = vec4(render3d(ivec2(gl_FragCoord.xy)), 1.0);
+  }
 }
 `;
 
