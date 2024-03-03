@@ -102,7 +102,7 @@ float random(vec2 x){
 
 void main(void) {
   vec2 st = (2.0 * gl_FragCoord.xy - u_resolution) / min(u_resolution.x, u_resolution.y);
-  if (length(st) < 0.3) {
+  if (length(st) < 0.1) {
     o_state = vec2(
       random(gl_FragCoord.xy * 0.15 + u_randomSeed + vec2(231.32, 171.92)),
       random(gl_FragCoord.xy * 0.21 + u_randomSeed + vec2(131.17, 319.23))
@@ -255,6 +255,7 @@ void main(void) {
   gui.add(parameters, 'rendering', {'2d': 0, '3d': 1});
   gui.add(parameters, 'reset');
 
+  let reqinit = false;
   document.body.onkeydown = e => {
     if (e.key == "h") {
       if (gui._hidden) {
@@ -264,7 +265,8 @@ void main(void) {
       }
       stats.dom.style.display = stats.dom.style.display != "none" ? "none": "block";
     } else if (e.key == " ") {
-      reset();
+      //reset();
+      reqinit = true;
     }
   };
   let mousedown = false;
@@ -275,13 +277,20 @@ void main(void) {
     if (!mousedown) return;
     const x = e.clientX / innerWidth;
     const y = e.clientY / innerHeight;
-    console.log(e, x, y);
     parameters.feed = x * 0.1;
     parameters.kill = y * 0.1;
   };
   document.body.onmouseup = e => {
     mousedown = false;
   };
+  document.body.addEventListener('touchmove', e => {
+    //e.preventDefault();
+    const touch = e.targetTouches[0];
+    const x = touch.pageX / innerWidth;
+    const y = touch.pageX / innerHeight;
+    parameters.feed = x * 0.1;
+    parameters.kill = y * 0.1;
+  }, { passive: true });
 
   const canvas = document.getElementById('canvas');
   const gl = canvas.getContext('webgl2');
@@ -368,6 +377,11 @@ void main(void) {
     let previousRealSeconds = performance.now() * 0.001;
     const loop = function() {
       stats.update();
+
+      if (reqinit) {
+        reqinit = false;
+        initialize();
+      }
 
       const currentRealSeconds = performance.now() * 0.001;
       const nextSimulationSeconds = simulationSeconds + parameters['time scale'] * Math.min(0.2, currentRealSeconds - previousRealSeconds);
