@@ -217,10 +217,11 @@ const parameters = {
   'kill': 0.06,
   'space step': 0.05,
   'time step': 0.1,
-  'time scale': 100.0,
+  'time scale': 200.0,
   'target': 0,
   'rendering': 1,
   reset: _ => reset(),
+  'stats': true,
   'full screen': () => canvas.requestFullscreen(),
 };
 
@@ -251,11 +252,15 @@ gui.add(parameters, 'feed', 0.0, 0.1).step(0.0001).listen();
 gui.add(parameters, 'kill', 0.0, 0.1).step(0.0001).listen();
 gui.add(parameters, 'space step', 0.01, 0.1).step(0.001);
 gui.add(parameters, 'time step', 0.001, 0.1).step(0.001);
-gui.add(parameters, 'time scale', 0.0, 300.0);
+gui.add(parameters, 'time scale', 0.0, 2000.0);
 gui.add(parameters, 'target', {'u': 0, 'v': 1, 'abs(u-v)': 2});
 gui.add(parameters, 'rendering', {'2d': 0, '3d': 1});
-gui.add(parameters, 'reset').name("reset (space)");
+gui.add(parameters, 'stats').onFinishChange(e => {
+  console.log(e);
+  stats.dom.style.display = e ? "block" : "none";
+});
 gui.add(parameters, 'full screen');
+gui.add(parameters, 'reset').name("reset (space)");
 
 let reqinit = false;
 let pause = false;
