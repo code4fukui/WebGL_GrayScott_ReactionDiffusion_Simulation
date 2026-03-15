@@ -1,6 +1,23 @@
 # Gray-Scott Reaction Diffusion Simulation in WebGL
 
-- [DEMO](https://code4fukui.github.io/WebGL_GrayScott_ReactionDiffusion_Simulation/)
-- forked from [aadebdeb/WebGL_GrayScott_ReactionDiffusion_Simulation](https://github.com/aadebdeb/WebGL_GrayScott_ReactionDiffusion_Simulation)
+This project is a WebGL-based implementation of the Gray-Scott reaction-diffusion model, which simulates the formation of various patterns.
 
-![image of Gray-Scott Reaction Diffusion](https://user-images.githubusercontent.com/10070637/56075724-ef0b8a80-5e01-11e9-959a-648b465090bc.gif)
+## Demo
+[https://code4fukui.github.io/WebGL_GrayScott_ReactionDiffusion_Simulation/](https://code4fukui.github.io/WebGL_GrayScott_ReactionDiffusion_Simulation/)
+
+## Features
+- WebGL-accelerated simulation of the Gray-Scott reaction-diffusion model
+- Adjustable parameters for diffusion rates, feed, kill, time step, and space step
+- Preset patterns for different types of reactions
+- 2D and 3D visualization modes
+- Real-time performance monitoring with FPS display
+
+## Usage
+1. Clone the repository:
+```
+git clone https://github.com/code4fukui/WebGL_GrayScott_ReactionDiffusion_Simulation.git
+```
+2. Open the `index.html` file in a web browser.
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
