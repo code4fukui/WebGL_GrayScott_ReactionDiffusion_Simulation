@@ -1,10 +1,9 @@
 # WebGL Gray-Scott 反応拡散シミュレーション
 
-1〜2文で説明。WebGLを使ったGray-Scott反応拡散のシミュレーションです。さまざまなパターンを生成することができます。
+WebGLを使ったGray-Scott反応拡散のシミュレーションです。さまざまなパターンを生成することができます。
 
 ## デモ
-[デモサイト](https://code4fukui.github.io/WebGL_GrayScott_ReactionDiffusion_Simulation/)  
-オリジナルの[aadebdeb/WebGL_GrayScott_ReactionDiffusion_Simulation](https://github.com/aadebdeb/WebGL_GrayScott_ReactionDiffusion_Simulation)からフォークしたリポジトリです。
+[https://code4fukui.github.io/WebGL_GrayScott_ReactionDiffusion_Simulation/](https://code4fukui.github.io/WebGL_GrayScott_ReactionDiffusion_Simulation/)
 
 ## 機能
 - Gray-Scott反応拡散のシミュレーション

@@ -1,5 +1,7 @@
 # Gray-Scott Reaction Diffusion Simulation in WebGL
 
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
+
 This project is a WebGL-based implementation of the Gray-Scott reaction-diffusion model, which simulates the formation of various patterns.
 
 ## Demo
