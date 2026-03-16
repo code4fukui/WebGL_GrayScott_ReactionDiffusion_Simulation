@@ -22,4 +22,4 @@ git clone https://github.com/code4fukui/WebGL_GrayScott_ReactionDiffusion_Simula
 2. Open the `index.html` file in a web browser.
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE).
